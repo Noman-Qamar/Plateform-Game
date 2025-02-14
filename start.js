@@ -100,16 +100,14 @@ var Player = class Player {
     }
 
     update(time, state, keys) {
-        let xSpeed = 0;
-        if (keys.ArrowLeft) xSpeed -= playerXSpeed;
-        if (keys.ArrowRight) xSpeed += playerXSpeed;
-        let pos = this.pos;
-        let movedX = pos.plus(new Vec(xSpeed * time, 0));
-        if (!state.level.touches(movedX, this.size, "wall")) {
-            pos = movedX;
-        }
-        let ySpeed = this.speed.y + time * gravity;
-        let movedY = pos.plus(new Vec (0, ySpeed * time));
+       let xSpeed = 0;
+       if (keys.ArrowLeft) xSpeed -= playerXSpeed;
+       if (keys.ArrowRight) xSpeed += playerXSpeed;
+       let pos = this.pos;
+       let movedX = pos.plus(new Vec(xSpeed * time, 0)); 
+       if (!state.level.touches(movedX, this.size, "wall")) {
+              pos = movedX;                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+       }
     }
 }
 function overlap(actor1, actor2) {
