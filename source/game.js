@@ -297,7 +297,7 @@ var wobbleSpeed = 8, wobbleDist = 0.07;
 
 var playerXSpeed = 7;
 var gravity = 30;
-var jumpSpeed = 50;
+var jumpSpeed = 17;
 
 function trackKeys(keys) {
   let down = Object.create(null);
