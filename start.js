@@ -108,6 +108,41 @@ var Player = class Player {
        if (!state.level.touches(movedX, this.size, "wall")) {
               pos = movedX;                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
        }
+       let ySpeed = this.speed.y + time * gravity;
+       let movedY = pos.plus(new Vec(0, ySpeed * time));
+       if (!state.level.touches(movedY, this.size, "wall")) {
+        pos = movedY;
+       } else if (keys.ArrowUp && ySpeed > 0) {
+        ySpeed = -jumpSpeed;
+       } else {
+        ySpeed = 0;
+       }
+       return new Player(pos, new Vec(xSpeed, ySpeed));
+    }
+}
+
+var Lava = class Lava {
+    constructor (pos, speed, reset) {
+        this.pos = pos;
+        this.speed = speed;
+        this.reset = reset;
+    }
+    get type() {return "lava"}
+    get size() {return new Vec(1,1)}
+
+    static create (pos, ch) {
+        if (ch == "=") return new Lava (pos, new Vec(2,0));
+        else if (ch == "|") return new Lava (pos, new Vec(0,2));
+        else if (ch == "v") return new Lava (pos, new Vec (0,3, pos));
+    }
+    collide (state) {
+        return new State (state.level, state.actors, "lost");
+    }
+    update (time, state) {
+        let newPos = this.pos.plus(this.speed.times(time));
+        if (!state.level.touches(newPos, this.size, "wall")) {
+            return new Lava (newPos, this.speed, this.reset)
+        }
     }
 }
 function overlap(actor1, actor2) {
