@@ -7,7 +7,8 @@ var simpleLevelPlan = `
 ..#####............#..
 ......#++++++++++++#..
 ......##############..
-......................`;
+......................
+`;
 
 var Level = class Level {
     constructor (plan) {
@@ -142,8 +143,71 @@ var Lava = class Lava {
         let newPos = this.pos.plus(this.speed.times(time));
         if (!state.level.touches(newPos, this.size, "wall")) {
             return new Lava (newPos, this.speed, this.reset)
+        } else if (this.reset) {
+            return new Lava(this.reset, this.speed, this.reset)
+        } else {
+            return new Lava (this.pos, this.speed.times(-1));
         }
     }
+}
+
+var Coin = class Coin {
+    constructor (pos, basePos, wobble) {
+        this.pos = pos;
+        this.basePos = basePos;
+        this.wobble = wobble;
+    }
+    get type() {return "coin";}
+    get size() {return new Vec(0.6, 0.6);}
+    static create(pos) {
+        let basePos = pos.plus(new Vec(0.2, 0.1));
+        return new Coin(basePos, basePos, Math.random() & Math.PI * 2);
+    }
+    collide(state) {
+        let filtered = state.actors.filter (a => a != this);
+        let status = state.status;
+        if (!filtered.some (a => a.type != "coin")) status = "won";
+        return new State (state.level, filtered, status);
+    }
+    update(time) {
+        let wobble = this.wobble + time * wobbleSpeed;
+        let wobblePos = Math.sin(wobble) * wobbleDist;
+        return new Coin(this.basePos.plus(new Vec(0, wobblePos)), this.basePos, wobble);
+    }
+}
+var levelChars = {
+    ".": "empty", "#": "wall", "+": "lava",
+    "@": Player, "o": Coin,
+    "=": Lava, "|": Lava, "v": Lava
+};
+
+var DOMDisplay = class DOMDisplay {
+    constructor (parent, level) {
+
+    }
+}
+
+function elt (name, attrs, ...children) {
+    let dom = document.createElement(name);
+    for (let attr of Ojbect.kets[attrs]) {
+        dom.setAttribute(attr, attrs[attr]);
+    }
+    for (let child of children) {
+        dom.appendChild(child);
+    }
+    return dom;
+}
+function drawGrid(level) {
+    return elt("table", {
+        class: "background",
+        style: `width: ${level.width * scale}px`
+    }, ...level.rows.map (row => 
+        elt("tr", {style: `height: ${scale}px`},
+            ...row.map(type => elt("td", {class: type})))
+    ))
+}
+function drawActors (actors) {
+    return elt
 }
 function overlap(actor1, actor2) {
     return  actor1.pos.x < actor2.pos.x + actor2.size.x &&
