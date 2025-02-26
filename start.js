@@ -183,7 +183,30 @@ var levelChars = {
 
 var DOMDisplay = class DOMDisplay {
     constructor (parent, level) {
+        this.dom = elt("div", {class: "game"}, drawGrid(level));
+        this.actorLayer = null;
+        parent.appendChild(this.dom);
+    }
+    clear() {this.dom.remove();}
 
+    syncState(state) {
+        if (this.actorLayer) this.actorLayer.remove();
+        this.actorLayer = drawActors(state.actors);
+        this.dom.appendChild(this.actorLayer);
+        this.dom.className = `game ${state.status}`;
+        this.scrollPlayerIntoView(state);
+    }
+    scrollPlayerIntoView (state) {
+        let width = this.dom.clientWidth;
+        let height = this.dom.clientHeight;
+        let margin = width / 3;
+
+        let left = this.dom.scrollLeft, right = left + width;
+        let top = this.dom.scrollTop, bottom = top + height;
+
+        let player = state.player;
+        let center = player.pos.plus(player.size.times(0.5)).times(scale);
+        
     }
 }
 
